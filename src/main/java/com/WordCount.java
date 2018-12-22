@@ -7,13 +7,12 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileInputFormat;
-import org.apache.hadoop.mapred.FileOutputFormat;
-import org.apache.hadoop.mapred.TextInputFormat;
-import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class WordCount {
 	public static class WCMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
@@ -32,7 +31,7 @@ public class WordCount {
 	public static class WCReducer extends Reducer<Text,LongWritable,Text,LongWritable>{
 		private LongWritable lw = new LongWritable();
 		
-		private void recud(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+		protected void recude(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
 			long sum = 0;
 			for(LongWritable value:values) {
 				sum += value.get();
@@ -48,8 +47,7 @@ public class WordCount {
 		job.setMapperClass(WCMapper.class);
 		job.setReducerClass(WCReducer.class);
 		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(LongWritable.class);
-		job.setInputFormatClass(TextInputFormat.class);
+		job.setInputFormatClass(FileInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		FileInputFormat.addInputPath(job, new Path("word.txt"));
 		FileOutputFormat.setOutputPath(job, new Path("word.log"));
